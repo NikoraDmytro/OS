@@ -1,15 +1,28 @@
 #include <iostream>
 #include <tchar.h>
+#include <fstream>
+#include <vector>
+#include <algorithm>
 #include <Windows.h>
 
 using namespace std;
 
-int main() 
+int qcmp(const void* a, const void* b)
+{
+	return _wcsicmp(*(const wchar_t**)a, *(const wchar_t**)b);
+}
+
+bool cmp(const wchar_t* lhs, const wchar_t* rhs)
+{
+	return _wcsicmp(lhs, rhs) == 1 ? true : false;
+}
+
+int main()
 {
 	cout << "sizeof(TCHAR) = " << sizeof(TCHAR) << endl;
-	cout << "default encoding : " 
-		 << (sizeof(TCHAR) == 2 ? "UNICODE" : "ASCII") 
-		 << endl;
+	cout << "default encoding : "
+		<< (sizeof(TCHAR) == 2 ? "UNICODE" : "ASCII")
+		<< endl;
 
 	setlocale(LC_ALL, "Ukrainian");
 	SetConsoleOutputCP(1251);
@@ -52,6 +65,99 @@ int main()
 	{
 		_tprintf(_T("\t%ls (_tprintf)\n"), wfamily[i]);
 		wcout << "\t" << wfamily[i] << " (wcout)" << endl;
-		MessageBox(0, _T(wfamily[i]), _T("Family"), MB_OK);
+
+		MessageBoxW(0, wfamily[i], L"Family", MB_OK);
 	}
+
+	qsort(wfamily, count, sizeof(wfamily[0]), qcmp);
+
+	cout << "\nAfter qsort: " << endl;
+	for (int i = 0; i < count; i++)
+	{
+		wcout << "\t" << wfamily[i] << endl;
+	}
+
+	sort(wfamily, wfamily + count, cmp);
+
+	cout << "\nAfter sort: " << endl;
+	for (int i = 0; i < count; i++)
+	{
+		wcout << "\t" << wfamily[i] << endl;
+	}
+
+	char* familyASCII[count];
+
+	for (int i = 0; i < count; i++)
+	{
+		familyASCII[i] = new char[size];
+
+		WideCharToMultiByte(
+			CP_ACP,         // Кодова сторінка, звичайно задається CP_ACP
+			0,				// 0
+			wfamily[i],     // Рядок, який перетворюється
+			size,			// Розмір (в байтах)
+			familyASCII[i], // Рядок - результат
+			size,			// Розмір в char символах.
+			NULL,			// Адреса символу, яким заміняється 
+			//символ, що перетворюється, якщо він не може бути відображений. Дорівнює NULL, якщо використовується символ за  замовчуванням.
+			NULL			// Покажчик на прапорець, який вказує на те, чи використовувався символ за замовчуванням у попередньому  параметрі.
+		);
+	}
+
+	cout << "\nFamily (in ASCII): " << endl;
+	for (int i = 0; i < count; i++)
+	{
+		printf("\t%s (printf)\n", familyASCII[i]);
+		cout << "\t" << familyASCII[i] << " (cout)" << endl;
+
+		MessageBoxA(0, familyASCII[i], "Family", MB_OK);
+	}
+
+	ifstream inputA("inputA.txt", ios::binary);
+	ifstream inputU("inputU.txt", ios::binary);
+	ofstream outputA("outputA.txt");
+	ofstream outputU("outputU.txt");
+
+	if (!inputA.is_open() || !inputU.is_open()) {
+		std::cerr << "Unable to open files" << std::endl;
+		return 1;
+	}
+
+	vector<char> buff;
+
+	for (char ch; inputA.get(ch);)
+	{
+		buff.push_back(ch);
+	}
+
+	reverse(buff.begin(), buff.end());
+
+	for (char ch : buff)
+	{
+		outputA.put(ch);
+	}
+
+	buff.clear();
+
+	for (char ch; inputU.get(ch);)
+	{
+		buff.push_back(ch);
+	}
+
+	if (buff[0] == '\xEF' && buff[1] == '\xBB' && buff[2] == '\xBF')
+	{
+		cout << "Unicode";
+	}
+
+	reverse(buff.begin(), buff.end());
+
+	for (char ch : buff)
+	{
+		outputU.put(ch);
+	}
+
+	inputA.close();
+	inputU.close();
+	outputA.close();
+	outputU.close();
 }
