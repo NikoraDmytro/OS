@@ -123,7 +123,7 @@ int main()
 		return 1;
 	}
 
-	vector<char> buff;
+	vector<wchar_t> buff;
 
 	for (char ch; inputA.get(ch);)
 	{
@@ -142,11 +142,6 @@ int main()
 	for (char ch; inputU.get(ch);)
 	{
 		buff.push_back(ch);
-	}
-
-	if (buff[0] == '\xEF' && buff[1] == '\xBB' && buff[2] == '\xBF')
-	{
-		cout << "Unicode";
 	}
 
 	reverse(buff.begin(), buff.end());
