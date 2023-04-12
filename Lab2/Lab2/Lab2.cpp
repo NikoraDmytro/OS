@@ -11,6 +11,10 @@ int main() {
 
 	srand(time(NULL));
 
+	cout << "n0 = " << n0 << ", n1 = " << n1 << endl;
+	cout << "E0 = " << E0 << ", D0 = " << D0 << endl;
+	cout << "E1 = " << E1 << ", D1 = " << D1 << endl;
+
 	unsigned long long t, e1t, d1e1t, e0d1e1t, d0e0d1e1t;
 
 	for (int i = 0; i < 10; i++) {

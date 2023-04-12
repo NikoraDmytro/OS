@@ -5,6 +5,7 @@
 #include <time.h>
 
 extern "C" unsigned long long Simple() {
+	srand(time(NULL));
 	unsigned long long x = rand() % 100 + 3;
 	x |= 1;
 
@@ -53,7 +54,7 @@ extern "C" unsigned long long PowMod(unsigned long long x, unsigned long long y,
 
 LAB2API unsigned long long GenKey(unsigned long long* E, unsigned long long* D) {
     int p, q;
-
+	
     do 
     {
         p = Simple(); 	
