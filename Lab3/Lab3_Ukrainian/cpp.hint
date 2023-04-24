@@ -1,0 +1,2 @@
+#define LAB3UKRAINIAN_API __declspec(dllexport)
+#define LAB3UKRAINIAN_API __declspec(dllimport)

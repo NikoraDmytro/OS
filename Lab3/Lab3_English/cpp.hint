@@ -1,0 +1,2 @@
+#define LAB3ENGLISH_API __declspec(dllexport)
+#define LAB3ENGLISH_API __declspec(dllimport)

@@ -1,10 +1,12 @@
 #include <iostream>
-
-#include "../Lab2_DLL/Lab2_outer.h";
+#include <windows.h>
+#include <tchar.h>
+#include "../Lab3_DLL/Lab3_DLL_outer.h";
 
 using namespace std;
 
-int main() {
+
+int main(int argc, char* argv[]) {
 	unsigned long long E0, D0, E1, D1;
 	unsigned long long n0 = GenKey(&E0, &D0);
 	unsigned long long n1 = GenKey(&E1, &D1);
@@ -18,7 +20,7 @@ int main() {
 	unsigned long long t, e1t, d1e1t, e0d1e1t, d0e0d1e1t;
 
 	for (int i = 0; i < 10; i++) {
-		t = min(n0, n1);
+		t = rand() % min(n0, n1);
 
 		Crypt(t, E1, n1, &e1t);
 		DeCrypt(e1t, D1, n1, &d1e1t);
@@ -30,4 +32,6 @@ int main() {
 
 		cout << "t[" << i << "] = " << t << ", decrypted with {d0, n0} = " << d0e0d1e1t << ((t == d1e1t) ? " OK" : " ERROR") << endl;
 	}
+
+	return 0;
 }
