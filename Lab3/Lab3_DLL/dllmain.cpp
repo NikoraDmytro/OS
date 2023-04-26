@@ -1,5 +1,6 @@
 // dllmain.cpp : Defines the entry point for the DLL application.
 #include "pch.h"
+#include "Lab3_DLL_inner.h"
 #include <iostream>
 
 using namespace std;
@@ -18,6 +19,14 @@ BOOL APIENTRY DllMain( HMODULE hModule,
             << " using " 
             << (lpReserved ? "static" : "dynamic") 
             << "\n\n";
+
+        char dllName[MAX_PATH];
+        GetModuleFileNameA(hModule, dllName, MAX_PATH);
+
+        if (!CheckControlBlock(dllName)) {
+            return false;
+        }
+
         break;
     case DLL_THREAD_ATTACH:
     case DLL_THREAD_DETACH:

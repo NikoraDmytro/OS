@@ -4,6 +4,56 @@
 #include <stdlib.h>
 #include <time.h>
 
+const int BLOCK_SIZE = 8;
+
+void CalculateChecksum(char* res, const char* data, uint32_t length) {
+	uint32_t crc = 0xFFFFFFFF;
+	uint32_t polynomial = 0xEDB88320;
+
+	for (uint32_t i = 0; i < length; ++i) {
+		crc ^= data[i];
+		for (int j = 0; j < 8; ++j) {
+			crc = (crc >> 1) ^ ((crc & 1) * polynomial);
+		}
+	}
+	crc ^= 0xFFFFFFFF;
+
+	snprintf(res, BLOCK_SIZE, "%08X", crc);
+}
+
+bool CheckControlBlock(char* fileName) {
+	std::ifstream infile(fileName, std::ios::binary);
+
+	if (!infile.is_open()) {
+		std::cerr << "Error: Could not open DLL file.\n";
+		return false;
+	}
+
+	infile.seekg(-BLOCK_SIZE, std::ios::end);
+	uint32_t fileSize = infile.tellg();
+	infile.seekg(0, std::ios::beg);
+
+	char* fileData = new char[fileSize];
+	infile.read(fileData, fileSize);
+
+	char calculatedChecksum[BLOCK_SIZE];
+	char expectedChecksum[BLOCK_SIZE];
+
+	CalculateChecksum(calculatedChecksum, fileData, fileSize);
+	infile.seekg(-BLOCK_SIZE, std::ios::end);
+	infile.read(expectedChecksum, BLOCK_SIZE);
+	infile.close();
+
+	if (strcmp(expectedChecksum, calculatedChecksum) != 0) {
+		std::cerr << "Error: Checksum mismatch.\n";
+		std::cerr << "Expected: " << expectedChecksum << std::endl;
+		std::cerr << "Calculated: " << calculatedChecksum << std::endl;
+		return false;
+	}
+
+	return true;
+};
+
 extern "C" unsigned long long Simple() {
 	srand(time(NULL));
 	unsigned long long x = rand() % 1000000 + 3;

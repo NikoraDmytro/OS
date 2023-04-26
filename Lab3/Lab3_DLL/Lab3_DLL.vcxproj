@@ -133,6 +133,10 @@
       <EnableUAC>false</EnableUAC>
       <ModuleDefinitionFile>Lab3_DLL.def</ModuleDefinitionFile>
     </Link>
+    <PostBuildEvent>
+      <Command>
+      </Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
